@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Menu, Bell, User, Download, LogOut, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -13,11 +13,33 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
   const { theme, toggleTheme } = useTheme();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const [notifications, setNotifications] = useState([
     { id: 1, message: 'Temperature Sensor 1 is critical', time: '2 min ago' },
     { id: 2, message: 'Smoke level is high', time: '5 min ago' },
     { id: 3, message: 'Power consumption peaked', time: '10 min ago' },
   ]);
+
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfileMenu(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+      if (exportRef.current && !exportRef.current.contains(event.target as Node)) {
+        setShowExportMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const clearNotifications = () => {
     setNotifications([]);
@@ -37,42 +59,43 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Data');
       XLSX.writeFile(wb, `${type}-data.xlsx`);
+      setShowExportMenu(false);
     } catch (error) {
       console.error('Error exporting data:', error);
     }
   };
 
   return (
-    <header className="bg-gray-800 dark:bg-gray-900 shadow-md flex items-center justify-between px-4 py-3">
+    <header className="bg-gray-800/95 backdrop-blur-sm shadow-lg flex items-center justify-between px-4 py-3 sticky top-0 z-50">
       <div className="flex items-center">
         <button 
           onClick={toggleSidebar}
-          className="text-gray-400 hover:text-white focus:outline-none"
+          className="text-gray-400 hover:text-white focus:outline-none p-2 rounded-lg hover:bg-gray-700/50 transition-colors duration-200"
         >
           <Menu size={24} />
         </button>
         <h1 className="ml-4 text-xl font-semibold text-white">UMM-BSID Monitoring System</h1>
       </div>
       
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2">
         <button
           onClick={toggleTheme}
-          className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700"
+          className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-700/50 transition-colors duration-200"
         >
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
-        {/* Export Button */}
-        <div className="relative">
+        {/* Export Menu */}
+        <div className="relative" ref={exportRef}>
           <button
-            onClick={() => setShowProfileMenu(prev => !prev)}
-            className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700"
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-700/50 transition-colors duration-200"
           >
             <Download size={20} />
           </button>
           
-          {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg py-1 z-50">
+          {showExportMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg py-1 z-50">
               <button
                 onClick={() => exportData('sensor')}
                 className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 w-full text-left"
@@ -96,10 +119,10 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
         </div>
 
         {/* Notifications */}
-        <div className="relative">
+        <div className="relative" ref={notificationRef}>
           <button
-            onClick={() => setShowNotifications(prev => !prev)}
-            className="text-gray-400 hover:text-white relative"
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-700/50 transition-colors duration-200 relative"
           >
             <Bell size={20} />
             {notifications.length > 0 && (
@@ -110,15 +133,17 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
           </button>
           
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 bg-gray-700 rounded-md shadow-lg py-1 z-50">
+            <div className="absolute right-0 mt-2 w-80 bg-gray-700 rounded-lg shadow-lg py-1 z-50">
               <div className="flex justify-between items-center px-4 py-2 border-b border-gray-600">
                 <h3 className="text-white font-medium">Notifications</h3>
-                <button
-                  onClick={clearNotifications}
-                  className="text-sm text-gray-400 hover:text-white"
-                >
-                  Clear all
-                </button>
+                {notifications.length > 0 && (
+                  <button
+                    onClick={clearNotifications}
+                    className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+                  >
+                    Clear all
+                  </button>
+                )}
               </div>
               {notifications.map(notification => (
                 <div
@@ -139,21 +164,24 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
         </div>
         
         {/* User Profile */}
-        <div className="relative">
+        <div className="relative" ref={profileRef}>
           <button
-            onClick={() => setShowProfileMenu(prev => !prev)}
-            className="flex items-center space-x-2 text-gray-400 hover:text-white"
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="flex items-center space-x-2 text-gray-400 hover:text-white p-2 rounded-lg hover:bg-gray-700/50 transition-colors duration-200"
           >
-            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
               <User size={18} />
             </div>
             <span className="hidden md:inline text-sm">{user?.username}</span>
           </button>
           
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-md shadow-lg py-1 z-50">
+            <div className="absolute right-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg py-1 z-50">
               <button
-                onClick={logout}
+                onClick={() => {
+                  logout();
+                  setShowProfileMenu(false);
+                }}
                 className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 w-full"
               >
                 <LogOut size={16} className="mr-2" />
