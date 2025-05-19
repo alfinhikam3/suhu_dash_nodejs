@@ -12,6 +12,17 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
+// Authentication
+export const login = async (username: string, password: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/login`, { username, password });
+    return response.data;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
+};
+
 // Sensor data endpoints
 export const fetchSensor1Data = async (): Promise<SensorData> => {
   try {
@@ -51,17 +62,6 @@ export const fetchElectricityData = async (): Promise<ListrikData> => {
     return response.data;
   } catch (error) {
     console.error('Error fetching electricity data:', error);
-    throw error;
-  }
-};
-
-// Authentication
-export const login = async (username: string, password: string) => {
-  try {
-    const response = await axios.post(`${API_URL}/login`, { username, password });
-    return response.data;
-  } catch (error) {
-    console.error('Login error:', error);
     throw error;
   }
 };
