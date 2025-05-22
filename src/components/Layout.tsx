@@ -12,14 +12,31 @@ const Layout: React.FC = () => {
   const [criticalMessage, setCriticalMessage] = useState('');
   const location = useLocation();
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
   // Auto-hide sidebar on route changes
   useEffect(() => {
     setSidebarOpen(false);
   }, [location]);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  // Check for critical conditions
+  useEffect(() => {
+    const checkCriticalStatus = () => {
+      // Add your critical condition checks here
+      const hasCriticalStatus = false; // This will be set by actual sensor data
+      if (hasCriticalStatus) {
+        setPlayCriticalAlert(true);
+        setShowCriticalAlert(true);
+        setCriticalMessage('Critical condition detected!');
+        setTimeout(() => setPlayCriticalAlert(false), 1000);
+      }
+    };
+
+    const interval = setInterval(checkCriticalStatus, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-900 text-white">
