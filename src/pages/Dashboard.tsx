@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Thermometer, Droplets, Flame, Wind, Zap } from 'lucide-react';
 import { format } from 'date-fns';
-
 import StatusBadge from '../components/StatusBadge';
 import SensorGauge from '../components/GaugeChart';
 import { 
@@ -99,91 +97,70 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <SensorGauge
-          title="Temperature (Sensor 1)"
-          value={sensor1Data?.suhu || 0}
-          minValue={0}
-          maxValue={40}
-          unit="°C"
-          colorStart="#3b82f6"
-          colorEnd="#ef4444"
-        />
-        
-        <SensorGauge
-          title="Temperature (Sensor 2)"
-          value={sensor2Data?.suhu || 0}
-          minValue={0}
-          maxValue={40}
-          unit="°C"
-          colorStart="#3b82f6"
-          colorEnd="#ef4444"
-        />
-
-        <SensorGauge
-          title="Fire Detection Level"
-          value={fireSmokeData?.api_value || 0}
-          unit="%"
-          colorStart="#10b981"
-          colorEnd="#ef4444"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <SensorGauge
-          title="Humidity (Sensor 1)"
-          value={sensor1Data?.kelembapan || 0}
-          unit="%"
-          colorStart="#10b981"
-          colorEnd="#3b82f6"
-        />
-        
-        <SensorGauge
-          title="Humidity (Sensor 2)"
-          value={sensor2Data?.kelembapan || 0}
-          unit="%"
-          colorStart="#10b981"
-          colorEnd="#3b82f6"
-        />
-
-        <SensorGauge
-          title="Smoke Detection Level"
-          value={fireSmokeData?.asap_value || 0}
-          unit="%"
-          colorStart="#10b981"
-          colorEnd="#64748b"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <SensorGauge
-          title="Voltage (3-Phase)"
-          value={electricityData?.voltage_3ph || 0}
+          title="Phase R Voltage"
+          value={electricityData?.phase_r || 0}
           minValue={180}
           maxValue={260}
           unit="V"
           colorStart="#10b981"
           colorEnd="#ef4444"
         />
-
+        
         <SensorGauge
-          title="Current (3-Phase)"
-          value={electricityData?.current_3ph || 0}
-          minValue={0}
-          maxValue={100}
-          unit="A"
+          title="Phase S Voltage"
+          value={electricityData?.phase_s || 0}
+          minValue={180}
+          maxValue={260}
+          unit="V"
           colorStart="#10b981"
           colorEnd="#ef4444"
         />
-
+        
         <SensorGauge
-          title="Power (3-Phase)"
-          value={electricityData?.power_3ph || 0}
-          minValue={0}
-          maxValue={15000}
-          unit="W"
+          title="Phase T Voltage"
+          value={electricityData?.phase_t || 0}
+          minValue={180}
+          maxValue={260}
+          unit="V"
           colorStart="#10b981"
           colorEnd="#ef4444"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <SensorGauge
+          title="Power Factor R"
+          value={electricityData?.pf_r || 0}
+          minValue={0}
+          maxValue={1}
+          unit=""
+          colorStart="#ef4444"
+          colorEnd="#10b981"
+          showPercent={true}
+        />
+        
+        <SensorGauge
+          title="Power Factor S"
+          value={electricityData?.pf_s || 0}
+          minValue={0}
+          maxValue={1}
+          unit=""
+          colorStart="#ef4444"
+          colorEnd="#10b981"
+          showPercent={true}
+        />
+        
+        <SensorGauge
+          title="Power Factor T"
+          value={electricityData?.pf_t || 0}
+          minValue={0}
+          maxValue={1}
+          unit=""
+          colorStart="#ef4444"
+          colorEnd="#10b981"
+          showPercent={true}
         />
       </div>
       
