@@ -21,26 +21,6 @@ const Layout: React.FC = () => {
     setSidebarOpen(false);
   }, [location]);
 
-  // Example of critical alert trigger
-  useEffect(() => {
-    const checkCriticalStatus = () => {
-      // Add your critical condition checks here
-      const hasCriticalStatus = Math.random() > 0.8; // Simulate random critical events
-      if (hasCriticalStatus) {
-        setShowCriticalAlert(true);
-        setCriticalMessage('Critical temperature detected in Sensor 1!');
-        setPlayCriticalAlert(true);
-        setTimeout(() => {
-          setPlayCriticalAlert(false);
-          setShowCriticalAlert(false);
-        }, 5000);
-      }
-    };
-
-    const interval = setInterval(checkCriticalStatus, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="flex h-screen bg-gray-900 text-white">
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />

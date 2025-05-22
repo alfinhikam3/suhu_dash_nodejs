@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Thermometer, Droplets, Flame, Wind, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 
-import SensorCard from '../components/SensorCard';
 import StatusBadge from '../components/StatusBadge';
 import SensorGauge from '../components/GaugeChart';
 import { 
@@ -21,7 +20,6 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [refreshInterval, setRefreshInterval] = useState<number>(30);
-  const [playCriticalAlert, setPlayCriticalAlert] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -38,18 +36,6 @@ const Dashboard: React.FC = () => {
       setFireSmokeData(fireSmoke);
       setElectricityData(electricity);
       setLastUpdate(new Date());
-
-      // Check for critical conditions
-      const isCritical = 
-        (sensor1?.suhu && (sensor1.suhu < 10 || sensor1.suhu > 35)) ||
-        (sensor2?.suhu && (sensor2.suhu < 10 || sensor2.suhu > 35)) ||
-        (fireSmoke?.api_value && fireSmoke.api_value > 80) ||
-        (fireSmoke?.asap_value && fireSmoke.asap_value > 80);
-
-      if (isCritical) {
-        setPlayCriticalAlert(true);
-        setTimeout(() => setPlayCriticalAlert(false), 3000);
-      }
     } catch (error) {
       console.error('Error fetching sensor data:', error);
     } finally {
@@ -112,50 +98,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <SensorCard
-          title="Temperature (Sensor 1)"
-          value={sensor1Data?.suhu || 0}
-          unit="°C"
-          icon={<Thermometer size={24} className="text-red-400" />}
-          color="border-red-600"
-          isLoading={loading}
-          trend={sensor1Data?.suhu && sensor1Data.suhu > 25 ? 'up' : 'down'}
-          isCritical={sensor1Data?.suhu ? (sensor1Data.suhu < 10 || sensor1Data.suhu > 35) : false}
-        />
-        
-        <SensorCard
-          title="Temperature (Sensor 2)"
-          value={sensor2Data?.suhu || 0}
-          unit="°C"
-          icon={<Thermometer size={24} className="text-orange-400" />}
-          color="border-orange-600"
-          isLoading={loading}
-          trend={sensor2Data?.suhu && sensor2Data.suhu > 25 ? 'up' : 'down'}
-          isCritical={sensor2Data?.suhu ? (sensor2Data.suhu < 10 || sensor2Data.suhu > 35) : false}
-        />
-        
-        <SensorCard
-          title="Fire Detection"
-          value={fireSmokeData?.api_value || 0}
-          unit="%"
-          icon={<Flame size={24} className="text-red-400" />}
-          color="border-red-600"
-          isLoading={loading}
-          isCritical={fireSmokeData?.api_value ? fireSmokeData.api_value > 80 : false}
-        />
-        
-        <SensorCard
-          title="Smoke Detection"
-          value={fireSmokeData?.asap_value || 0}
-          unit="%"
-          icon={<Wind size={24} className="text-gray-400" />}
-          color="border-gray-600"
-          isLoading={loading}
-          isCritical={fireSmokeData?.asap_value ? fireSmokeData.asap_value > 80 : false}
-        />
-      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <SensorGauge
@@ -210,6 +152,38 @@ const Dashboard: React.FC = () => {
           unit="%"
           colorStart="#10b981"
           colorEnd="#64748b"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <SensorGauge
+          title="Voltage (3-Phase)"
+          value={electricityData?.voltage_3ph || 0}
+          minValue={180}
+          maxValue={260}
+          unit="V"
+          colorStart="#10b981"
+          colorEnd="#ef4444"
+        />
+
+        <SensorGauge
+          title="Current (3-Phase)"
+          value={electricityData?.current_3ph || 0}
+          minValue={0}
+          maxValue={100}
+          unit="A"
+          colorStart="#10b981"
+          colorEnd="#ef4444"
+        />
+
+        <SensorGauge
+          title="Power (3-Phase)"
+          value={electricityData?.power_3ph || 0}
+          minValue={0}
+          maxValue={15000}
+          unit="W"
+          colorStart="#10b981"
+          colorEnd="#ef4444"
         />
       </div>
       
