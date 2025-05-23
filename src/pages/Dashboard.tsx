@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import StatusBadge from '../components/StatusBadge';
 import SensorGauge from '../components/GaugeChart';
 import { 
   fetchSensor1Data, 
@@ -46,20 +45,6 @@ const Dashboard: React.FC = () => {
     const interval = setInterval(fetchData, refreshInterval * 1000);
     return () => clearInterval(interval);
   }, [refreshInterval]);
-
-  const getStatusFromTemp = (temp: number) => {
-    if (temp < 10) return 'critical';
-    if (temp > 35) return 'critical';
-    if (temp < 18 || temp > 30) return 'warning';
-    return 'normal';
-  };
-
-  const getStatusFromHumidity = (humidity: number) => {
-    if (humidity < 20) return 'critical';
-    if (humidity > 80) return 'critical';
-    if (humidity < 30 || humidity > 70) return 'warning';
-    return 'normal';
-  };
 
   return (
     <div className="space-y-6">
@@ -129,101 +114,70 @@ const Dashboard: React.FC = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <SensorGauge
-          title="Power Factor R"
-          value={electricityData?.pf_r || 0}
+          title="Temperature (Sensor 1)"
+          value={sensor1Data?.suhu || 0}
           minValue={0}
-          maxValue={1}
-          unit=""
-          colorStart="#ef4444"
-          colorEnd="#10b981"
-          showPercent={true}
+          maxValue={50}
+          unit="°C"
+          colorStart="#10b981"
+          colorEnd="#ef4444"
         />
         
         <SensorGauge
-          title="Power Factor S"
-          value={electricityData?.pf_s || 0}
+          title="Humidity (Sensor 1)"
+          value={sensor1Data?.kelembapan || 0}
           minValue={0}
-          maxValue={1}
-          unit=""
-          colorStart="#ef4444"
-          colorEnd="#10b981"
-          showPercent={true}
-        />
-        
-        <SensorGauge
-          title="Power Factor T"
-          value={electricityData?.pf_t || 0}
-          minValue={0}
-          maxValue={1}
-          unit=""
-          colorStart="#ef4444"
-          colorEnd="#10b981"
-          showPercent={true}
+          maxValue={100}
+          unit="%"
+          colorStart="#10b981"
+          colorEnd="#3b82f6"
         />
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-          <h3 className="text-white text-base font-medium mb-3">Sensor Status</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">Temperature (S1)</span>
-              <StatusBadge 
-                status={sensor1Data?.suhu ? getStatusFromTemp(sensor1Data.suhu) : 'offline'} 
-              />
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">Temperature (S2)</span>
-              <StatusBadge 
-                status={sensor2Data?.suhu ? getStatusFromTemp(sensor2Data.suhu) : 'offline'} 
-              />
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">Humidity (S1)</span>
-              <StatusBadge 
-                status={sensor1Data?.kelembapan ? getStatusFromHumidity(sensor1Data.kelembapan) : 'offline'} 
-              />
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-400">Humidity (S2)</span>
-              <StatusBadge 
-                status={sensor2Data?.kelembapan ? getStatusFromHumidity(sensor2Data.kelembapan) : 'offline'} 
-              />
-            </div>
-          </div>
-        </div>
+        <SensorGauge
+          title="Temperature (Sensor 2)"
+          value={sensor2Data?.suhu || 0}
+          minValue={0}
+          maxValue={50}
+          unit="°C"
+          colorStart="#10b981"
+          colorEnd="#ef4444"
+        />
         
-        <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-          <h3 className="text-white text-base font-medium mb-3">Server Information</h3>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-            <div>
-              <span className="text-gray-400 text-sm">Hostname:</span>
-              <p className="text-white">dev-suhu.umm.ac.id</p>
-            </div>
-            <div>
-              <span className="text-gray-400 text-sm">IP Address:</span>
-              <p className="text-white">10.10.1.25</p>
-            </div>
-            <div>
-              <span className="text-gray-400 text-sm">Database Server:</span>
-              <p className="text-white">10.10.11.27</p>
-            </div>
-            <div>
-              <span className="text-gray-400 text-sm">Database:</span>
-              <p className="text-white">suhu</p>
-            </div>
-            <div>
-              <span className="text-gray-400 text-sm">Uptime:</span>
-              <p className="text-white">23 days, 4 hours</p>
-            </div>
-            <div>
-              <span className="text-gray-400 text-sm">Last Maintenance:</span>
-              <p className="text-white">2025-03-15</p>
-            </div>
-          </div>
-        </div>
+        <SensorGauge
+          title="Humidity (Sensor 2)"
+          value={sensor2Data?.kelembapan || 0}
+          minValue={0}
+          maxValue={100}
+          unit="%"
+          colorStart="#10b981"
+          colorEnd="#3b82f6"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <SensorGauge
+          title="Fire Detection"
+          value={fireSmokeData?.api_value || 0}
+          minValue={0}
+          maxValue={100}
+          unit="%"
+          colorStart="#10b981"
+          colorEnd="#ef4444"
+        />
+        
+        <SensorGauge
+          title="Smoke Detection"
+          value={fireSmokeData?.asap_value || 0}
+          minValue={0}
+          maxValue={100}
+          unit="%"
+          colorStart="#10b981"
+          colorEnd="#64748b"
+        />
       </div>
     </div>
   );
