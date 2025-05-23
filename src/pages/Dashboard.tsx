@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
           <h2 className="text-2xl font-bold text-white mb-1">Monitoring Dashboard</h2>
           <p className="text-gray-400">
@@ -91,6 +91,7 @@ const Dashboard: React.FC = () => {
           unit="V"
           colorStart="#10b981"
           colorEnd="#ef4444"
+          lastUpdate={lastUpdate}
         />
         
         <SensorGauge
@@ -101,6 +102,7 @@ const Dashboard: React.FC = () => {
           unit="V"
           colorStart="#10b981"
           colorEnd="#ef4444"
+          lastUpdate={lastUpdate}
         />
         
         <SensorGauge
@@ -111,10 +113,11 @@ const Dashboard: React.FC = () => {
           unit="V"
           colorStart="#10b981"
           colorEnd="#ef4444"
+          lastUpdate={lastUpdate}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <SensorGauge
           title="Temperature (Sensor 1)"
           value={sensor1Data?.suhu || 0}
@@ -123,6 +126,7 @@ const Dashboard: React.FC = () => {
           unit="°C"
           colorStart="#10b981"
           colorEnd="#ef4444"
+          lastUpdate={lastUpdate}
         />
         
         <SensorGauge
@@ -133,10 +137,9 @@ const Dashboard: React.FC = () => {
           unit="%"
           colorStart="#10b981"
           colorEnd="#3b82f6"
+          lastUpdate={lastUpdate}
         />
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <SensorGauge
           title="Temperature (Sensor 2)"
           value={sensor2Data?.suhu || 0}
@@ -145,6 +148,7 @@ const Dashboard: React.FC = () => {
           unit="°C"
           colorStart="#10b981"
           colorEnd="#ef4444"
+          lastUpdate={lastUpdate}
         />
         
         <SensorGauge
@@ -155,6 +159,7 @@ const Dashboard: React.FC = () => {
           unit="%"
           colorStart="#10b981"
           colorEnd="#3b82f6"
+          lastUpdate={lastUpdate}
         />
       </div>
 
@@ -167,6 +172,7 @@ const Dashboard: React.FC = () => {
           unit="%"
           colorStart="#10b981"
           colorEnd="#ef4444"
+          lastUpdate={lastUpdate}
         />
         
         <SensorGauge
@@ -177,6 +183,7 @@ const Dashboard: React.FC = () => {
           unit="%"
           colorStart="#10b981"
           colorEnd="#64748b"
+          lastUpdate={lastUpdate}
         />
       </div>
     </div>
