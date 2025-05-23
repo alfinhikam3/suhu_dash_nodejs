@@ -41,8 +41,22 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Load notifications from localStorage on mount
+  useEffect(() => {
+    const savedNotifications = localStorage.getItem('notifications');
+    if (savedNotifications) {
+      setNotifications(JSON.parse(savedNotifications));
+    }
+  }, []);
+
+  // Save notifications to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+  }, [notifications]);
+
   const clearNotifications = () => {
     setNotifications([]);
+    localStorage.setItem('notifications', JSON.stringify([]));
   };
 
   const exportData = async (type: 'sensor' | 'fire-smoke' | 'electricity') => {
@@ -55,10 +69,20 @@ const Header: React.FC<HeaderProps> = ({ toggleSidebar }) => {
       });
       const data = await response.json();
       
-      const ws = XLSX.utils.json_to_sheet(data);
+      // Format the data for export
+      const formattedData = data.map((item: any) => ({
+        ...item,
+        timestamp: new Date(item.timestamp).toLocaleString()
+      }));
+      
+      const ws = XLSX.utils.json_to_sheet(formattedData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Data');
-      XLSX.writeFile(wb, `${type}-data.xlsx`);
+      
+      // Add file name with timestamp
+      const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm');
+      XLSX.writeFile(wb, `${type}-data_${timestamp}.xlsx`);
+      
       setShowExportMenu(false);
     } catch (error) {
       console.error('Error exporting data:', error);
